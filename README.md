@@ -1,5 +1,7 @@
-Smart Park Monthly User Management
-Overview
+# Smart Park Monthly User Management
+
+## Overview
+
 Smart Park Monthly User Management is a secure, responsive web application for managing park resources, visitor data, and operational aspects of conservation areas and national parks. Built with Next.js and Firebase, it provides an intuitive interface for park administrators and staff to monitor and manage park operations efficiently.
 Key Features
 
@@ -10,7 +12,7 @@ Resource Management: Track and manage park resources, equipment, and infrastruct
 Visitor Management: Monitor visitor entries, generate reports, and analyze visitor patterns
 Responsive Design: Works seamlessly on desktop and mobile devices for field operations
 
-Technical Stack
+# Technical Stack
 
 Frontend: Next.js, React, TailwindCSS with DaisyUI
 Authentication: Firebase Authentication with NextAuth.js
@@ -24,7 +26,7 @@ Node.js (v14 or newer)
 npm or yarn
 Firebase account
 
-Installation
+# Installation
 
 Clone the repository:
 bashCopygit clone https://github.com/your-username/smartparks-management.git
