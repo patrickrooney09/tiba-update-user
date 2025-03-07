@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 /**
  * Login form component using DaisyUI
  */
 export default function LoginForm() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,15 +22,16 @@ export default function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        username,
+        email,
         password,
         redirect: false,
       });
 
-      if (result.error) {
-        setError("Invalid username or password");
+      if (result?.error) {
+        setError("Invalid email or password");
       } else {
         router.push("/dashboard");
+        router.refresh();
       }
     } catch (error) {
       setError("An error occurred during login. Please try again.");
@@ -42,7 +44,9 @@ export default function LoginForm() {
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="card w-full max-w-sm bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title text-center mb-4">SmartParks Management</h2>
+          <h2 className="card-title text-center mb-4">
+            Smart Park Monthly User Management
+          </h2>
 
           {error && (
             <div className="alert alert-error mb-4">
@@ -53,14 +57,14 @@ export default function LoginForm() {
           <form onSubmit={handleSubmit}>
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Username</span>
+                <span className="label-text">Email</span>
               </label>
               <input
-                type="text"
-                placeholder="Enter username"
+                type="email"
+                placeholder="Enter email"
                 className="input input-bordered"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -88,6 +92,12 @@ export default function LoginForm() {
               </button>
             </div>
           </form>
+
+          <div className="text-center mt-4">
+            <Link href="/register" className="link link-hover text-sm">
+              Need an account? Sign up
+            </Link>
+          </div>
         </div>
       </div>
     </div>
