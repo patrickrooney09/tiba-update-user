@@ -1,21 +1,16 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground: #000000; /* Make this darker for better contrast */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1a1a1a; /* Make this a bit lighter */
+    --foreground: #ffffff; /* Make this fully white for contrast */
   }
 }
 
@@ -23,4 +18,26 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Add this to ensure proper text contrast in DaisyUI cards */
+.card {
+  color: #333333;
+}
+
+/* Ensure form inputs have visible text */
+input,
+select,
+textarea {
+  color: #333333;
+}
+
+/* Make sure headings are visible */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333333;
 }

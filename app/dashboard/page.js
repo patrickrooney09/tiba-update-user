@@ -1,0 +1,93 @@
+"use client";
+
+import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import MonthlyUserSearch from "@/components/MonthlyUserSearch";
+import MonthlyUserDetails from "@/components/MonthlyUserDetails";
+import UserProfileForm from "@/components/UserProfileForm";
+
+/**
+ * Dashboard page with user search and profile editing functionality
+ */
+export default function Dashboard() {
+  const { data: session } = useSession();
+  const [user, setUser] = useState(null);
+
+  const handleUserFound = (userData) => {
+    setUser(userData);
+  };
+
+  const handleUpdateSuccess = () => {
+    // Refresh user data after successful update
+    if (user && user.MonthlyID) {
+      fetch("/api/smartpark/monthly-details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ monthlyId: user.MonthlyID }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.ListItems && data.ListItems.length > 0) {
+            setUser(data.ListItems[0]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error refreshing user data:", error);
+        });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-base-200">
+      <div className="navbar bg-base-100 shadow-md">
+        <div className="flex-1">
+          <a className="btn  normal-case text-xl text-base-content hover:bg-base-300">
+            Smart Park Monthly User Management
+          </a>
+        </div>
+        <div className="flex-none">
+          <div className="dropdown dropdown-end">
+            <label
+              tabIndex={0}
+              className="btn btn-primary btn-circle avatar placeholder hover:bg-base-300">
+              <div className="bg-neutral-focus text-neutral-content rounded-full w-10">
+                <span>{session?.user?.name?.charAt(0) || "U"}</span>
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+              <li>
+                <a
+                  className="text-base-content hover:bg-base-300"
+                  onClick={() => signOut()}>
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto p-4">
+        <MonthlyUserSearch onUserFound={handleUserFound} />
+
+        {user && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <MonthlyUserDetails user={user} />
+            </div>
+            <div>
+              <UserProfileForm
+                user={user}
+                onUpdateSuccess={handleUpdateSuccess}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
