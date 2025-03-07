@@ -1,91 +1,71 @@
-// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { FirestoreAdapter } from "@next-auth/firebase-adapter";
 import { getFirebaseAdminApp } from "@/lib/firebase-admin-config";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase-config";
+import { getAuth } from "firebase-admin/auth";
 
-// Create a function to get auth options at runtime instead of build time
-const getAuthOptions = () => {
-  // Initialize Firebase Admin at runtime when the route is accessed
-  getFirebaseAdminApp();
+// Initialize Firebase Admin first
+const adminApp = getFirebaseAdminApp();
 
-  return {
-    providers: [
-      CredentialsProvider({
-        name: "Firebase",
-        credentials: {
-          email: { label: "Email", type: "email" },
-          password: { label: "Password", type: "password" },
-        },
-        async authorize(credentials) {
-          if (!credentials?.email || !credentials?.password) {
+// Create the auth options configuration
+const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Firebase",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          // Use Firebase Admin to verify the email/password
+          const auth = getAuth(adminApp);
+          const userRecord = await auth.getUserByEmail(credentials.email);
+
+          if (!userRecord || !userRecord.email) {
             return null;
           }
 
-          try {
-            // Authenticate with Firebase
-            const userCredential = await signInWithEmailAndPassword(
-              auth,
-              credentials.email,
-              credentials.password
-            );
-
-            const user = userCredential.user;
-
-            if (!user || !user.email) {
-              return null;
-            }
-
-            // Return a user object that NextAuth can use
-            return {
-              id: user.uid,
-              name: user.displayName || user.email.split("@")[0],
-              email: user.email,
-              image: user.photoURL,
-            };
-          } catch (error) {
-            console.error("Authentication error:", error);
-            return null;
-          }
-        },
-      }),
-      // You can add other providers like Google, GitHub, etc.
-    ],
-    adapter: FirestoreAdapter({
-      // No need to pass any parameters with the latest version
+          return {
+            id: userRecord.uid,
+            name: userRecord.displayName || userRecord.email.split("@")[0],
+            email: userRecord.email,
+            image: userRecord.photoURL,
+          };
+        } catch (error) {
+          console.error("Authentication error:", error);
+          return null;
+        }
+      },
     }),
-    session: {
-      strategy: "jwt",
+  ],
+  adapter: FirestoreAdapter(),
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
-    pages: {
-      signIn: "/",
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+      }
+      return session;
     },
-    callbacks: {
-      async jwt({ token, user }) {
-        // If user is defined, a sign in is happening and we can add custom fields
-        if (user) {
-          token.id = user.id;
-        }
-        return token;
-      },
-      async session({ session, token }) {
-        if (token) {
-          session.user.id = token.id;
-        }
-        return session;
-      },
-    },
-  };
+  },
 };
 
-// Create handler function for GET requests
-export async function GET(req) {
-  return await NextAuth(req, { ...getAuthOptions() });
-}
-
-// Create handler function for POST requests
-export async function POST(req) {
-  return await NextAuth(req, { ...getAuthOptions() });
-}
+// Create and export the route handlers
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
