@@ -4,6 +4,8 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { getFirebaseAuth } from "../lib/firebase-config";
 
 /**
  * Login form component using DaisyUI
@@ -13,6 +15,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -93,10 +96,37 @@ export default function LoginForm() {
             </div>
           </form>
 
+          {successMessage && (
+            <div className="alert alert-success mt-4">
+              <span>{successMessage}</span>
+            </div>
+          )}
+
           <div className="text-center mt-4">
-            <Link href="/register" className="link link-hover text-sm">
-              Need an account? Sign up
-            </Link>
+            <button
+              type="button"
+              className="link link-hover text-sm"
+              onClick={async () => {
+                try {
+                  setError("");
+                  setSuccessMessage("");
+                  if (!email) {
+                    setError("Please enter your email address first");
+                    return;
+                  }
+                  const auth = getFirebaseAuth();
+                  await sendPasswordResetEmail(auth, email);
+                  setSuccessMessage(
+                    "Password reset email sent! Please check your inbox."
+                  );
+                } catch (error) {
+                  setError(
+                    "Failed to send password reset email. Please try again."
+                  );
+                }
+              }}>
+              Forgot Password?
+            </button>
           </div>
         </div>
       </div>

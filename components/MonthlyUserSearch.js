@@ -15,6 +15,10 @@ export default function MonthlyUserSearch({ onUserFound }) {
 
     if (!monthlyId.trim()) return;
 
+    // Format the ID with leading zeros only for the API call
+    const numericValue = monthlyId.replace(/\D/g, "");
+    const paddedMonthlyId = numericValue.padStart(5, "0");
+
     setLoading(true);
     setError("");
 
@@ -24,7 +28,7 @@ export default function MonthlyUserSearch({ onUserFound }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ monthlyId }),
+        body: JSON.stringify({ monthlyId: paddedMonthlyId }),
       });
 
       const data = await response.json();

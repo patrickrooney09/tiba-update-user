@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
  * Root layout for the application
  */
 export const metadata = {
-  title: "SmartParks Management",
+  title: "SmartPark Management",
   description: "Interface for managing SmartParks monthly users",
 };
 

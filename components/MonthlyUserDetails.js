@@ -55,6 +55,35 @@ export default function MonthlyUserDetails({ user }) {
             </label>
             <p>{user.ValidToStr}</p>
           </div>
+
+          <div className="form-control col-span-full">
+            <label className="label">
+              <span className="label-text font-bold">License Plates</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {(() => {
+                const licensePlates = [
+                  user.CarPlate1,
+                  user.CarPlate2,
+                  user.CarPlate3,
+                  user.CarPlate4,
+                  user.CarPlate5,
+                ].filter((plate) => plate && plate.trim() !== "");
+
+                return licensePlates.length > 0 ? (
+                  licensePlates.map((plate, index) => (
+                    <span key={index} className="badge badge-neutral">
+                      {plate}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-500">
+                    No license plates registered
+                  </span>
+                );
+              })()}
+            </div>
+          </div>
         </div>
       </div>
     </div>

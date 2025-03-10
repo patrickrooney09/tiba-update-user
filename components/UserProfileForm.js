@@ -50,6 +50,17 @@ export default function UserProfileForm({ user, onUpdateSuccess }) {
     }
   }, [user]);
 
+  // Auto-hide success message after 5 seconds
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess("");
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   const validatePlate = (plate) => {
     // Only allow uppercase letters and numbers, no spaces or dashes
     return /^[A-Z0-9]*$/.test(plate);

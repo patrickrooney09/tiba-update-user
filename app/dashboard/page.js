@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase-config";
 import MonthlyUserSearch from "@/components/MonthlyUserSearch";
 import MonthlyUserDetails from "@/components/MonthlyUserDetails";
 import UserProfileForm from "@/components/UserProfileForm";
@@ -12,6 +14,21 @@ import UserProfileForm from "@/components/UserProfileForm";
 export default function Dashboard() {
   const { data: session } = useSession();
   const [user, setUser] = useState(null);
+  const [resetSent, setResetSent] = useState(false);
+
+  const handlePasswordReset = async () => {
+    try {
+      const auth = getFirebaseAuth();
+      if (auth && session?.user?.email) {
+        await sendPasswordResetEmail(auth, session.user.email);
+        setResetSent(true);
+        // Reset the notification after 5 seconds
+        setTimeout(() => setResetSent(false), 5000);
+      }
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+    }
+  };
 
   const handleUserFound = (userData) => {
     setUser(userData);
@@ -59,6 +76,18 @@ export default function Dashboard() {
             <ul
               tabIndex={0}
               className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+              {resetSent && (
+                <li className="text-success text-sm p-2">
+                  Password reset email sent!
+                </li>
+              )}
+              <li>
+                <a
+                  className="text-base-content hover:bg-base-300"
+                  onClick={handlePasswordReset}>
+                  Reset Password
+                </a>
+              </li>
               <li>
                 <a
                   className="text-base-content hover:bg-base-300"
