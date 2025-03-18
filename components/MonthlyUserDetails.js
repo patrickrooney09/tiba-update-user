@@ -56,6 +56,15 @@ export default function MonthlyUserDetails({ user }) {
             <p>{user.ValidToStr}</p>
           </div>
 
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-bold">Wallet Balance</span>
+            </label>
+            <p>
+              ${(Math.round(Number(user.WalletBalance || 0)) / 100).toFixed(2)}
+            </p>
+          </div>
+
           <div className="form-control col-span-full">
             <label className="label">
               <span className="label-text font-bold">License Plates</span>

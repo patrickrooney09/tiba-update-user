@@ -16,11 +16,17 @@ export async function PUT(request) {
     }
 
     const data = await updateMonthly(monthlyData);
-    return NextResponse.json(data);
+
+    // SmartPark API error codes are handled by the API client
+    return NextResponse.json({
+      ...data,
+      success: true,
+      message: "Monthly details updated successfully",
+    });
   } catch (error) {
     console.error("Error updating monthly details:", error);
     return NextResponse.json(
-      { error: "Failed to update monthly details" },
+      { error: "Failed to update monthly details", details: error.message },
       { status: 500 }
     );
   }

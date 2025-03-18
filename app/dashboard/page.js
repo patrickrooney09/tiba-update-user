@@ -7,7 +7,7 @@ import { getFirebaseAuth } from "@/lib/firebase-config";
 import MonthlyUserSearch from "@/components/MonthlyUserSearch";
 import MonthlyUserDetails from "@/components/MonthlyUserDetails";
 import UserProfileForm from "@/components/UserProfileForm";
-
+import ApplyDiscount from "@/components/ApplyDiscount";
 /**
  * Dashboard page with user search and profile editing functionality
  */
@@ -15,7 +15,6 @@ export default function Dashboard() {
   const { data: session } = useSession();
   const [user, setUser] = useState(null);
   const [resetSent, setResetSent] = useState(false);
-
   const handlePasswordReset = async () => {
     try {
       const auth = getFirebaseAuth();
@@ -35,24 +34,41 @@ export default function Dashboard() {
   };
 
   const handleUpdateSuccess = () => {
-    // Refresh user data after successful update
+    // Refresh user data after successful update with a slight delay
     if (user && user.MonthlyID) {
-      fetch("/api/smartpark/monthly-details", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ monthlyId: user.MonthlyID }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.ListItems && data.ListItems.length > 0) {
-            setUser(data.ListItems[0]);
-          }
+      // Add a small delay to ensure the update has propagated
+      setTimeout(() => {
+        fetch("/api/smartpark/monthly-details", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ monthlyId: user.MonthlyID }),
         })
-        .catch((error) => {
-          console.error("Error refreshing user data:", error);
-        });
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch updated user data");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.ListItems && data.ListItems.length > 0) {
+              const updatedUser = data.ListItems[0];
+              // Ensure wallet balance is a valid number
+              if (typeof updatedUser.WalletBalance === "number") {
+                setUser(updatedUser);
+              } else {
+                console.error(
+                  "Invalid wallet balance in response:",
+                  updatedUser.WalletBalance
+                );
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error refreshing user data:", error);
+          });
+      }, 1000); // 1 second delay
     }
   };
 
@@ -105,8 +121,9 @@ export default function Dashboard() {
 
         {user && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
+            <div className="space-y-6">
               <MonthlyUserDetails user={user} />
+              <ApplyDiscount user={user} onUpdate={handleUpdateSuccess} />
             </div>
             <div>
               <UserProfileForm
