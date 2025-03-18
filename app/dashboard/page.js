@@ -77,7 +77,7 @@ export default function Dashboard() {
       <div className="navbar bg-base-100 shadow-md">
         <div className="flex-1">
           <a className="btn  normal-case text-xl text-base-content hover:bg-base-300">
-            Smart Park Monthly User Management
+            Monthly User Management
           </a>
         </div>
         <div className="flex-none">
