@@ -84,7 +84,7 @@ export default function ApplyDiscount({ user, onUpdate }) {
             })),
           IntsertIfNotFound: false,
           InsertIfNotFound: false,
-          UpdateBalanceMethod: "Update",
+          UpdateBalanceMethod: 1,
           Badge1: parseInt(user.Badge1 || 0),
           Badge2: parseInt(user.Badge2 || 0),
           Badge3: parseInt(user.Badge3 || 0),

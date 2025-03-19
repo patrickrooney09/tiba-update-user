@@ -118,7 +118,7 @@ export default function UserProfileForm({ user, onUpdateSuccess }) {
           })),
         IntsertIfNotFound: false,
         InsertIfNotFound: false,
-        UpdateBalanceMethod: "Update",
+        UpdateBalanceMethod: 2,
         Badge1: user.Badge1 || 0,
         Badge2: user.Badge2 || 0,
         Badge3: user.Badge3 || 0,
