@@ -47,52 +47,12 @@ export default function ApplyDiscount({ user, onUpdate }) {
         // Convert dollar amount to cents for the API (1 dollar = 100 cents)
         const amountInCents = Math.round(amountToAdd * 100);
 
-        // Prepare update data with all required fields
+        // Prepare minimal update data with only required fields
         const updateData = {
           MonthlyID: user.MonthlyID,
-          MonthlyDBID: user.MonthlyDBID,
-          CompanyID: user.CompanyID,
-          SubCompanyID: user.SubCompanyID || "",
-          FirstName: user.FirstName,
-          LastName: user.LastName,
-          IDNum: user.IDNum,
           Badge: parseInt(user.Badge || 0),
-          ValidFrom: user.ValidFromStr,
-          ValidTo: user.ValidToStr,
-          MType: parseInt(user.MType || 0),
-          CategoryID: parseInt(user.CategoryID || 0),
-          RateID: parseInt(user.RateID || 0),
-          AccessProfileNum: parseInt(user.AccessProfileNum || 0),
-          LoopFlag: Boolean(user.LoopFlag === "1"),
-          PayOnExit: Boolean(user.PayOnExit === "1"),
-          PassBackFlag: Boolean(user.PassBackFlag === "1"),
           WalletBalance: amountInCents,
-          Cars: [
-            user.CarPlate1,
-            user.CarPlate2,
-            user.CarPlate3,
-            user.CarPlate4,
-            user.CarPlate5,
-          ]
-            .filter((plate) => plate && plate.trim() !== "")
-            .map((plate) => ({
-              PlateID: plate,
-              ModelDescription: "",
-              ColorDescription: "",
-              ModelID: 0,
-              ColorID: 0,
-            })),
-          IntsertIfNotFound: false,
-          InsertIfNotFound: false,
           UpdateBalanceMethod: 1,
-          Badge1: parseInt(user.Badge1 || 0),
-          Badge2: parseInt(user.Badge2 || 0),
-          Badge3: parseInt(user.Badge3 || 0),
-          Badge4: parseInt(user.Badge4 || 0),
-          QR: user.QR || "",
-          Mobile: user.Mobile || "",
-          AddUnits: parseInt(user.AddUnits || 0),
-          MonthlyPrice: parseFloat(user.MonthlyPrice || 0),
         };
 
         const response = await fetch("/api/smartpark/update-monthly", {

@@ -87,26 +87,11 @@ export default function UserProfileForm({ user, onUpdateSuccess }) {
     setSuccess("");
 
     try {
-      // Prepare update data
+      // Prepare minimal update data with only required fields
       const updateData = {
         MonthlyID: user.MonthlyID,
-        MonthlyDBID: user.MonthlyDBID,
-        CompanyID: user.CompanyID,
-        SubCompanyID: user.SubCompanyID || "",
-        FirstName: user.FirstName,
-        LastName: user.LastName,
-        IDNum: user.IDNum,
-        Badge: user.Badge,
-        ValidFrom: user.ValidFromStr,
-        ValidTo: user.ValidToStr,
-        MType: user.MType,
-        CategoryID: user.CategoryID,
-        RateID: user.RateID,
+        Badge: parseInt(user.Badge || 0),
         AccessProfileNum: selectedProfile,
-        LoopFlag: user.LoopFlag === "1",
-        PayOnExit: user.PayOnExit === "1",
-        PassBackFlag: user.PassBackFlag === "1",
-        WalletBalance: user.WalletBalance,
         Cars: carPlates
           .filter((plate) => plate.trim() !== "")
           .map((plate) => ({
@@ -116,17 +101,6 @@ export default function UserProfileForm({ user, onUpdateSuccess }) {
             ModelID: 0,
             ColorID: 0,
           })),
-        IntsertIfNotFound: false,
-        InsertIfNotFound: false,
-        UpdateBalanceMethod: 2,
-        Badge1: user.Badge1 || 0,
-        Badge2: user.Badge2 || 0,
-        Badge3: user.Badge3 || 0,
-        Badge4: user.Badge4 || 0,
-        QR: user.QR || "",
-        Mobile: user.Mobile || "",
-        AddUnits: user.AddUnits || 0,
-        MonthlyPrice: user.MonthlyPrice || 0,
       };
 
       const response = await fetch("/api/smartpark/update-monthly", {
