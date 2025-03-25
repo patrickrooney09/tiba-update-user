@@ -124,15 +124,28 @@ export default function LoginForm() {
                     return;
                   }
 
+                  console.log("[Password Reset] Environment check:", {
+                    nodeEnv: process.env.NODE_ENV,
+                    hasWindow: typeof window !== "undefined",
+                    hasFirebaseConfig:
+                      !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+                  });
+
                   console.log("[Password Reset] Initializing Firebase auth");
                   const auth = getFirebaseAuth();
 
                   if (!auth) {
                     console.error(
-                      "[Password Reset] Firebase auth initialization failed"
+                      "[Password Reset] Firebase auth initialization failed",
+                      {
+                        environment: process.env.NODE_ENV,
+                        hasFirebaseConfig:
+                          !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+                        hasFirebaseAuth: !!auth,
+                      }
                     );
                     setError(
-                      "Authentication service is not available. Please try again later."
+                      "Authentication service configuration is missing. Please contact support."
                     );
                     return;
                   }
