@@ -123,7 +123,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-6">
               <MonthlyUserDetails user={user} />
-              <ApplyDiscount user={user} onUpdate={handleUpdateSuccess} />
+              {/* <ApplyDiscount user={user} onUpdate={handleUpdateSuccess} /> */}
             </div>
             <div>
               <UserProfileForm

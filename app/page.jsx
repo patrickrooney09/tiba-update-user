@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "../components/LoginForm";
 
 /**
  * Landing page with login form
