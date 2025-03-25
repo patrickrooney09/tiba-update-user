@@ -105,24 +105,77 @@ export default function LoginForm() {
           <div className="text-center mt-4">
             <button
               type="button"
-              className="link link-hover text-sm"
+              className={`link link-hover text-sm ${
+                loading ? "opacity-50" : ""
+              }`}
+              disabled={loading}
               onClick={async () => {
                 try {
                   setError("");
                   setSuccessMessage("");
+                  setLoading(true);
+
+                  console.log(
+                    "[Password Reset] Starting password reset process"
+                  );
+
                   if (!email) {
                     setError("Please enter your email address first");
                     return;
                   }
+
+                  console.log("[Password Reset] Initializing Firebase auth");
                   const auth = getFirebaseAuth();
+
+                  if (!auth) {
+                    console.error(
+                      "[Password Reset] Firebase auth initialization failed"
+                    );
+                    setError(
+                      "Authentication service is not available. Please try again later."
+                    );
+                    return;
+                  }
+
+                  console.log("[Password Reset] Sending reset email");
                   await sendPasswordResetEmail(auth, email);
+                  console.log("[Password Reset] Reset email sent successfully");
+
                   setSuccessMessage(
                     "Password reset email sent! Please check your inbox."
                   );
                 } catch (error) {
-                  setError(
-                    "Failed to send password reset email. Please try again."
-                  );
+                  console.error("[Password Reset] Error:", {
+                    code: error.code,
+                    message: error.message,
+                    stack: error.stack,
+                  });
+
+                  // Handle specific Firebase auth errors
+                  switch (error.code) {
+                    case "auth/user-not-found":
+                      setError("No account exists with this email address.");
+                      break;
+                    case "auth/invalid-email":
+                      setError("Please enter a valid email address.");
+                      break;
+                    case "auth/network-request-failed":
+                      setError(
+                        "Network error. Please check your connection and try again."
+                      );
+                      break;
+                    case "auth/too-many-requests":
+                      setError("Too many attempts. Please try again later.");
+                      break;
+                    default:
+                      setError(
+                        `Failed to send reset email: ${
+                          error.message || "Unknown error"
+                        }`
+                      );
+                  }
+                } finally {
+                  setLoading(false);
                 }
               }}>
               Forgot Password?
